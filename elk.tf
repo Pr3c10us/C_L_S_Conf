@@ -1,7 +1,18 @@
+# data "aws_vpc" "vpc-f80daf83" {
+#   id = var.vpc
+# }
 
-resource "aws_opensearch_domain" "central_logging_acadian" {
+# data "aws_subnet_ids" "vpc-f80daf83" {
+#   vpc_id = var.subnet_ids
+
+#   tags = {
+#     Tier = "private"
+#   }
+# }
+
+resource "aws_elasticsearch_domain" "central_logging_acadian" {
   domain_name           = "central-logging"
-  engine_version = "OpenSearch_1.2"
+  elasticsearch_version = "6.7"
 
 
   log_publishing_options {
@@ -10,7 +21,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   cluster_config {
-    instance_type = "c5.large.search"
+    instance_type = "r5.large.elasticsearch"
   }
 
   ebs_options {
@@ -23,6 +34,14 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
     automated_snapshot_start_hour = 23
   }
 
+
+  # vpc_options {
+  # subnet_ids = [
+  #   data.aws_subnet_ids.vpc-f80daf83.ids
+  # ]
+
+  # security_group_ids = var.security_groups
+  # }
 
   advanced_options = {
     "rest.action.multi.allow_explicit_index" = "true"
@@ -50,72 +69,56 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
     tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
   }
 
-  access_policies = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "es:*",
-      "Principal": "*",
-      "Effect": "Allow",
-      "Resource": [
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-      ],
-      "Condition": {
-        "IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
+  access_policies = ${data.aws_iam_policy_document.opensearch_destination_policy.json}
+  data "aws_iam_policy_document" "opensearch_destination_policy" {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Action": [
+                "es:ESHttps*"
+                ],
+              "Principal": {
+                "AWS": "*"
+                },
+              "Effect": "Allow",
+              "Condition": [
+                {
+                  "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}
+              },
+              {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"
+              ]
+            }
+            }
+            ],
+              "Resource": [
+                "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
+                "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+              ]
+          },
+          {
+              "Action":[
+                "es:ESHttps*"
+                ],
+              "Principal": {
+                "AWS":"*"
+                },
+              "Effect": "Allow",
+              "Condition": {
+                  "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
+              },
+              "Resource": [
+                "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
+                "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+              ]
+          } 
+      ]
+    }
+    POLICY
+    
+      tags = {
+        Domain = "central_logging_acadian"
       }
     }
-  ]
-}
-POLICY
-#   access_policies = <<POLICY
-# {
-#   "Version": "2012-10-17",
-#   "Statement": [
-#       {
-#           "Action": [
-#             "es:ESHttp*"
-#             ],
-#           "Principal": {
-#             "AWS": "*"
-#             },
-#           "Effect": "Allow",
-#           "Condition": {
-#             {
-#               "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}
-#           },
-#           "Condition": {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
-#          },
-#           "Resource": [
-#             "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
-#             "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-#           ]
-#       },
-#       {
-#             "Action":[
-#                "es:ESHttp*"
-#                ],
-#             "Principal": {
-#               "AWS":"*"
-#               },
-#             "Effect": "Allow",
-#             "Condition": {
-#                 "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
-#             },
-#             "Resource": [
-#               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
-#               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-#             ]
-#         } 
-#   ]
-# }
-# POLICY
-
-  tags = {
-    Domain = "central_logging_acadian"
-  }
-}
 
 resource "aws_cloudwatch_log_group" "central_logging_acadian_els" {
   name = "central_logging_cross_account_els"
@@ -139,9 +142,8 @@ resource "aws_cloudwatch_log_resource_policy" "central_logging_acadian_els" {
         "logs:CreateLogStream"
       ],
       "Resource": "arn:aws:logs:*"
-    }   
- ]
+    }
+  ]
 }
 CONFIG
 }
-
