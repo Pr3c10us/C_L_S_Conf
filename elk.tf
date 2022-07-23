@@ -56,7 +56,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   "Statement": [
       {
           "Action": [
-            "es:*"
+            "es:ESHttp*"
             ],
           "Principal": {
             "AWS": "*"
@@ -75,7 +75,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
       },
       {
             "Action":[
-               "es:*"
+               "es:ESHttp*"
                ],
             "Principal": {
               "AWS":"*"
