@@ -56,12 +56,15 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   "Statement": [
       {
           "Action": [
-            "es:*"
+            "es:ESHttp*"
             ],
           "Principal": {
             "AWS": "*"
             },
           "Effect": "Allow",
+          "Condition": {
+            "IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
+          },
           "Resource": [
             "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
             "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
@@ -69,12 +72,15 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
       },
       {
             "Action":[
-               "es:*"
+               "es:ESHttp*"
                ],
             "Principal": {
               "AWS":"*"
               },
             "Effect": "Allow",
+            "Condition": {
+              "IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
+            },
             "Resource": [
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
