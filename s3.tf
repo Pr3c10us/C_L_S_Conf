@@ -1,6 +1,6 @@
 #s3 bucket
 resource "aws_s3_bucket" "logging-acadian" {
-  bucket = "acadian-logging-bucket"
+  bucket = "acadian-preciousowolabi-logging-bucket"
 }
 
 resource "aws_s3_bucket_acl" "logging_bucket_acadian_acl" {
