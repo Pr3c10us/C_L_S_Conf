@@ -19,22 +19,82 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
     volume_size = 20
   }
 
+  snapshot_options {
+    automated_snapshot_start_hour = 23
+  }
+
+
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+  }
+
+  advanced_security_options {
+    enabled                        = true
+    internal_user_database_enabled = true
+    master_user_options {
+      master_user_name     = var.user_name
+      master_user_password = var.user_password
+    }
+  }
+
+  node_to_node_encryption {
+    enabled = true
+  }
+
+  encrypt_at_rest {
+    enabled = true
+  }
+
+  domain_endpoint_options {
+    enforce_https       = true
+    tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
+  }
+
   access_policies = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
-    {
-      "Action": "es:*",
-      "Principal": "*",
-      "Effect": "Allow",
-      "Resource": "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-    }
+      {
+          "Action": [
+            "es:ESHttp*"
+            ],
+          "Principal": {
+            "AWS": "*"
+            },
+          "Effect": "Allow",
+          "Condition": {
+            {
+              "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}
+          },
+          "Condition": {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
+         },
+          "Resource": [
+            "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
+            "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+          ]
+      },
+      {
+            "Action":[
+               "es:ESHttp*"
+               ],
+            "Principal": {
+              "AWS":"*"
+              },
+            "Effect": "Allow",
+            "Condition": {
+                "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
+            },
+            "Resource": [
+              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
+              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+            ]
+        } 
   ]
 }
 POLICY
 
   tags = {
-    Domain = "central_logging_cross_account"
+    Domain = "central_logging_acadian"
   }
 }
 
