@@ -19,37 +19,6 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
     volume_size = 20
   }
 
-  snapshot_options {
-    automated_snapshot_start_hour = 23
-  }
-
-
-  advanced_options = {
-    "rest.action.multi.allow_explicit_index" = "true"
-  }
-
-  advanced_security_options {
-    enabled                        = false
-    internal_user_database_enabled = false
-    master_user_options {
-      master_user_name     = var.user_name
-      master_user_password = var.user_password
-    }
-  }
-
-  node_to_node_encryption {
-    enabled = true
-  }
-
-  encrypt_at_rest {
-    enabled = true
-  }
-
-  domain_endpoint_options {
-    enforce_https       = true
-    tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
-  }
-
   access_policies = <<POLICY
 {
   "Version": "2012-10-17",
