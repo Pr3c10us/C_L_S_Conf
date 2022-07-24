@@ -89,10 +89,17 @@ CONFIG
 
 
 data "aws_iam_policy_document" "aos_access_policies" {
-  statement : [
-        {
+  statement {
             actions : [
-              "es:ESHttps*"
+              "es:ESHttpPost",
+              "es:ESHttpPut",
+              "logs:CreateLogGroup",
+              "logs:CreateLogStream",
+              "logs:PutLogEvents",
+              "kinesis:GetShardIterator",
+              "kinesis:GetRecords",
+              "kinesis:DescribeStream",
+              "kinesis:ListStreams"
             ],
             principals : {
               "AWS": "*"
@@ -108,8 +115,9 @@ data "aws_iam_policy_document" "aos_access_policies" {
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
             ]
-        },
-        {
+  }
+  
+  statement {
             actions :[
                "es:ESHttps*"
             ],
@@ -123,9 +131,7 @@ data "aws_iam_policy_document" "aos_access_policies" {
             resources : [
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-            ]
-        } 
-    ]
+            ] 
   }
-
+}
   
