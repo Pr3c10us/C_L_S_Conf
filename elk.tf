@@ -54,7 +54,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
 {
   "Version": "2012-10-17",
   "Statement": [
-   {
+      {
         "Action": [
           "es:ESHttp*"
         ],
