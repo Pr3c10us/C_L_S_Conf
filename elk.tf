@@ -50,7 +50,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   access_policies = data.aws_iam_policy_document.aos_access_policies.json          
-
+}
 
 resource "aws_cloudwatch_log_group" "central_logging_acadian_els" {
   name = "central_logging_cross_account_els"
