@@ -71,23 +71,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
             "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
             "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
           ]
-      },
-      {
-            "Action":[
-               "es:ESHttp*"
-               ],
-            "Principal": {
-              "AWS":"*"
-              },
-            "Effect": "Allow",
-            "Condition": {
-                "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
-            },
-            "Resource": [
-              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
-              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-            ]
-        } 
+      } 
   ]
 }
 POLICY
