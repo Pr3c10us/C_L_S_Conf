@@ -50,7 +50,8 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
     tls_security_policy = "Policy-Min-TLS-1-0-2019-07"
   }
 
-  access_policies = data.aws_iam_policy_document.aos_access_policies.json          
+  access_policies = data.aws_iam_policy_document.aos_access_policies.json
+}
 
 
 resource "aws_cloudwatch_log_group" "central_logging_acadian_els" {
