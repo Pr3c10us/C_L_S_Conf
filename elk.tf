@@ -89,7 +89,7 @@ data "aws_iam_policy_document" "aos_access_policies" {
     effect = "Allow"
     principals {
       type = "AWS"
-      identifiers = "*"
+      identifiers = *
     }
     actions = [
       "es:ESHttp*"
