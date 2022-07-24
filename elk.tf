@@ -69,9 +69,15 @@ resource "aws_cloudwatch_log_resource_policy" "central_logging_acadian_els" {
         "Service": "es.amazonaws.com"
       },
       "Action": [
+        "es:ESHttpPost",
+        "es:ESHttpPut",
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
         "logs:PutLogEvents",
-        "logs:PutLogEventsBatch",
-        "logs:CreateLogStream"
+        "kinesis:GetShardIterator",
+        "kinesis:GetRecords",
+        "kinesis:DescribeStream",
+        "kinesis:ListStreams"
       ],
       "Resource": "arn:aws:logs:*"
     }   
@@ -123,3 +129,6 @@ data "aws_iam_policy_document" "aos_access_policies" {
             ]
         } 
     ]
+  }
+
+  
