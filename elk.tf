@@ -30,7 +30,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
 
   advanced_security_options {
     enabled                        = false
-    internal_user_database_enabled = true
+    internal_user_database_enabled = false
     master_user_options {
       master_user_name     = var.user_name
       master_user_password = var.user_password
@@ -55,23 +55,17 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Action": "es:ESHttpGet*",
+      "Action": "es:*",
       "Principal": "*",
       "Effect": "Allow",
-      "Resource": [
-            "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
-            "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-      ],
-      "Condition": {
-        "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}
-      }
+      "Resource": "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
     }
   ]
 }
 POLICY
 
   tags = {
-    Domain = "central_logging_acadian"
+    Domain = "central_logging_cross_account"
   }
 }
 
