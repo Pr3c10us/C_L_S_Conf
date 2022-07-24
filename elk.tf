@@ -90,7 +90,7 @@ CONFIG
 
 data "aws_iam_policy_document" "aos_access_policies" {
   statement {
-            actions : [
+            actions = [
               "es:ESHttpPost",
               "es:ESHttpPut",
               "logs:CreateLogGroup",
@@ -100,35 +100,40 @@ data "aws_iam_policy_document" "aos_access_policies" {
               "kinesis:GetRecords",
               "kinesis:DescribeStream",
               "kinesis:ListStreams"
-            ],
-            principals : {
-              "AWS": "*"
-            },
-            effects : "Allow",
-            conditions [
-              {
-                "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}},
-                {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
-              }
-            ],
-            resources : [
+            ]
+            principals {
+              AWS = "*"
+            }
+
+            effects = "Allow"
+
+            conditions {
+              ArnEquals = {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}
+              IpAddress = {"aws:SourceIp": ["0.0.0.0/0"]}
+            }
+
+            resources = [
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
             ]
   }
   
   statement {
-            actions :[
+            actions = [
                "es:ESHttps*"
-            ],
+            ]
+
             principals {
-              "AWS":"*"
-            },
-            effects : "Allow",
+              AWS = "*"
+            }
+
+            effects = "Allow" 
+
             condition {
-                "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
-            },
-            resources : [
+              ArnEquals = {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
+            }
+
+            resources = [
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
               "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
             ] 
