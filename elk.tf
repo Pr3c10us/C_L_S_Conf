@@ -1,4 +1,3 @@
-
 resource "aws_opensearch_domain" "central_logging_acadian" {
   domain_name           = "central-logging"
   engine_version = "OpenSearch_1.2"
@@ -47,11 +46,56 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
 
   domain_endpoint_options {
     enforce_https       = true
-    tls_security_policy = "Policy-Min-TLS-1-0-2019-07"
+    tls_security_policy = "Policy-Min-TLS-1-2-2019-07"
   }
 
-  access_policies = data.aws_iam_policy_document.aos_access_policies.json          
+  access_policies = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+      {
+          "Action": [
+            "es:ESHttp*"
+            ],
+          "Principal": {
+            "AWS": "*"
+            },
+          "Effect": "Allow",
+          "Condition": {
+            {
+              "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}
+          },
+          "Condition": {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
+         },
+          "Resource": [
+            "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
+            "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+          ]
+      },
+      {
+            "Action":[
+               "es:ESHttp*"
+               ],
+            "Principal": {
+              "AWS":"*"
+              },
+            "Effect": "Allow",
+            "Condition": {
+                "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"}
+            },
+            "Resource": [
+              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
+              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+            ]
+        } 
+  ]
+}
+POLICY
 
+  tags = {
+    Domain = "central_logging_acadian"
+  }
+}
 
 resource "aws_cloudwatch_log_group" "central_logging_acadian_els" {
   name = "central_logging_cross_account_els"
@@ -79,23 +123,4 @@ resource "aws_cloudwatch_log_resource_policy" "central_logging_acadian_els" {
  ]
 }
 CONFIG
-}
-
-
-
-data "aws_iam_policy_document" "aos_access_policies" {
-  statement {
-    effect = "Allow"
-    principals {
-      type = "AWS"
-      identifiers = "*"
-    }
-    actions = [
-      "es:ESHttp*"
-    ]
-    resources = [
-              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging",
-              "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
-            ]
-  }
 }
