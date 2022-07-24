@@ -114,3 +114,5 @@ resource "aws_cloudwatch_log_resource_policy" "central_logging_acadian_els" {
 }
 CONFIG
 }
+
+
