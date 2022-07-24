@@ -29,7 +29,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   advanced_security_options {
-    enabled                        = true
+    enabled                        = false
     internal_user_database_enabled = true
     master_user_options {
       master_user_name     = var.user_name
@@ -114,11 +114,9 @@ resource "aws_cloudwatch_log_resource_policy" "central_logging_acadian_els" {
       "Principal": {
         "Service": "es.amazonaws.com"
       },
-      "Action": [
-        "logs:PutLogEvents",
-        "logs:PutLogEventsBatch",
-        "logs:CreateLogStream"
-      ],
+      "Action":[
+               "es:ESHttp*"
+               ],
       "Resource": "arn:aws:logs:*"
     }   
  ]
