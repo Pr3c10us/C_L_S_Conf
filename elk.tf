@@ -1,6 +1,6 @@
 
 resource "aws_opensearch_domain" "central_logging_acadian" {
-  domain_name           = "central-logging"
+  domain_name           = "central-logging-testing"
   engine_version = "OpenSearch_1.2"
 
 
