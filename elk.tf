@@ -31,7 +31,6 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
       master_user_name     = var.user_name
       master_user_password = var.user_password
     }
-    anonymous_auth_enabled = true
   }
 
   node_to_node_encryption {
