@@ -1,6 +1,6 @@
-resource "aws_elasticsearch_domain" "central_logging_acadian" {
+resource "aws_opensearch_domain" "central_logging_acadian" {
   domain_name           = "central-logging-testing"
-  elasticsearch_version = "7.10"
+  engine_version = "1.2"
 
 
   log_publishing_options {
@@ -28,6 +28,12 @@ resource "aws_elasticsearch_domain" "central_logging_acadian" {
   }
 
   advanced_security_options {
+    fine_grained_options {
+      enabled = true
+      # 
+      master_user = var.user_name
+      master_password = var.user_password
+  }
     enabled                        = false
     internal_user_database_enabled = true
     master_user_options {
