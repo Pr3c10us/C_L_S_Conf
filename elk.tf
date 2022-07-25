@@ -50,7 +50,64 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   } 
  
    
-    access_policies = data.aws_iam_policy_document.aos_access_policies.json
+    access_policies = <<POLICY 
+{ 
+  "Version": "2012-10-17", 
+  "Statement": [ 
+    { 
+      "Action": [ 
+        "es:ESHttp*" 
+      ], 
+      "Principal": { 
+        "AWS": "*" 
+      }, 
+      "Effect": "Allow", 
+      "Resource": [ 
+        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging", 
+        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*" 
+      ], 
+      "Condition": { 
+        "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}}, 
+      "Condition": {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]} 
+      } 
+    }, 
+    { 
+      "Action":[ 
+        "es:ESHttp*" 
+      ], 
+      "Principal": { 
+        "AWS":"*" 
+      }, 
+      "Effect": "Allow", 
+      "Condition": { 
+        "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"} 
+      }, 
+      "Resource": [ 
+        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging", 
+        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*" 
+      ] 
+    } 
+  ] 
+} 
+POLICY 
+#   access_policies = <<POLICY 
+# { 
+#   "Version": "2012-10-17", 
+#   "Statement": [ 
+#     { 
+       
+       
+       
+       
+#     }  
+#   ] 
+# } 
+# POLICY 
+ 
+  tags = { 
+    Domain = "central_logging_acadian" 
+  } 
+} 
  
 resource "aws_cloudwatch_log_group" "central_logging_acadian_els" { 
   name = "central_logging_cross_account_els" 
@@ -85,41 +142,3 @@ resource "aws_cloudwatch_log_resource_policy" "central_logging_acadian_els" {
 } 
 CONFIG 
 }
-
-data "aws_iam_policy_document" "aos_access_policies" {
-"Statement": [ 
-    { 
-      "Action": [ 
-        "es:ESHttp*" 
-      ], 
-      "Principal": { 
-        "AWS": "*" 
-      }, 
-      "Effect": "Allow", 
-      "Resource": [ 
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging", 
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*" 
-      ], 
-      "Condition": { 
-        "ArnEquals": {"aws:SourceArn": "arn:aws:firehose:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:deliverystream/${var.kinesis_firehose_name}"}}, 
-      "Condition": {"IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]} 
-      } 
-    }, 
-    { 
-      "Action":[ 
-        "es:ESHttp*" 
-      ], 
-      "Principal": { 
-        "AWS":"*" 
-      }, 
-      "Effect": "Allow", 
-      "Condition": { 
-        "ArnEquals": {"aws:SourceArn": "${aws_iam_role.central_logging_acadian.arn}"} 
-      }, 
-      "Resource": [ 
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging", 
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*" 
-      ] 
-    } 
-  ]
-  }
