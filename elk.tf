@@ -68,7 +68,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
       },
       "Condition": {
         "IpAddress": {"aws:SourceIp": ["0.0.0.0/0"]}
-      },
+      }
     },
     {
       "Action":[
