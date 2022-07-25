@@ -4,7 +4,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   engine_version = "OpenSearch_1.2"
 
   log_publishing_options {
-    cloudwatch_log_group_arn = aws_cloudwatch_log_group.example.arn
+    cloudwatch_log_group_arn = aws_cloudwatch_log_group.central_logging_cross_account_els.arn
     log_type                 = "INDEX_SLOW_LOGS"
   }
 
