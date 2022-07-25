@@ -9,7 +9,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   cluster_config {
-    instance_type = "r5.large.search"
+    instance_type = "r5.large.elasticsearch"
   }
 
   ebs_options {
@@ -19,6 +19,19 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
   encrypt_at_rest {
     enabled = true
+  }
+  advanced_options = {
+    "rest.action.multi.allow_explicit_index" = "true"
+  }
+
+  advanced_security_options {
+    enabled                        = true
+    internal_user_database_enabled = true
+    master_user_options {
+      master_user_name     = var.user_name
+      master_user_password = var.user_password
+    }
+    anonymous_auth_enabled = true
   }
 
   node_to_node_encryption {
