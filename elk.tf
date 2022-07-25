@@ -50,7 +50,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   } 
  
    
-    access_policies = <<POLICY 
+  access_policies = <<POLICY 
 { 
   "Version": "2012-10-17", 
   "Statement": [ 
@@ -90,19 +90,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   ] 
 } 
 POLICY 
-#   access_policies = <<POLICY 
-# { 
-#   "Version": "2012-10-17", 
-#   "Statement": [ 
-#     { 
-       
-       
-       
-       
-#     }  
-#   ] 
-# } 
-# POLICY 
+
  
   tags = { 
     Domain = "central_logging_acadian" 
