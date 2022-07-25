@@ -35,6 +35,12 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
       master_user_password = var.user_password
     }
   }
+  fine_grained_options {
+    enabled = true
+   # 
+    master_user = var.user_name
+    master_password = var.user_password
+  }
 
   node_to_node_encryption {
     enabled = true
