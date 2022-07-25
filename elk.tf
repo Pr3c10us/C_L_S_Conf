@@ -9,13 +9,16 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   cluster_config {
-    instance_type = "r4.large.search"
+    instance_type = "r5.large.elasticsearch"
   }
 
   ebs_options {
     ebs_enabled = true
     volume_type = "gp2"
     volume_size = 20
+  }
+  encrypt_at_rest {
+    enabled = true
   }
 
   node_to_node_encryption {
