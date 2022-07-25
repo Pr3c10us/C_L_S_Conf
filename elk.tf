@@ -9,7 +9,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   cluster_config {
-    instance_type = "r4.large.elasticsearch"
+    instance_type = "r4.large.search"
   }
 
   ebs_options {
