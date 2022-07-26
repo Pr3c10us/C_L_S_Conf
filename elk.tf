@@ -59,7 +59,7 @@ data "aws_iam_policy_document" "os_access_policies" {
       effect = "Allow"
       principals {
         type = "AWS"
-        identifiers = [aws_iam_role.aos_cognito_authenticated.arn]
+        identifiers = [aws_iam_role.cognito_authenticated.arn]
       }
       actions = [
         "es:ESHttp*"
