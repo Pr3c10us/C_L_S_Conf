@@ -1,6 +1,6 @@
 
 resource "aws_opensearch_domain" "central_logging_acadian" { 
-  domain_name           = "central-logging-testing-2" 
+  domain_name           = "central-logging-testing" 
   engine_version = "OpenSearch_1.2"
 
   log_publishing_options {
@@ -9,7 +9,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   cluster_config {
-    instance_type = "r5.large.search"
+    instance_type = "r5.large.elasticsearch"
   }
 
   ebs_options {
@@ -41,6 +41,14 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
     enforce_https = true
     tls_security_policy = "Policy-Min-TLS-1-0-2019-07"
   }
+
+  cognito_options {
+    enabled = true
+    user_pool_id = aws_cognito_user_pool.pool.id
+    identity_pool_id = aws_cognito_identity_pool.pool.id
+    role_arn = aws_iam_role.cognito.arn
+  }
+
 
   access_policies = data.aws_iam_policy_document.os_access_policies.json
 
