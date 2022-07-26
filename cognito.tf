@@ -7,7 +7,7 @@ resource "aws_cognito_user_pool_domain" "user_pool_domain" {
   user_pool_id = aws_cognito_user_pool.pool.id
 }
 resource "aws_cognito_user_pool_client" "user_pool_client" {
-  name = "${var.aos_domain_name}-opensearch"
+  name = "central-logging-testing-opensearch"
   user_pool_id = aws_cognito_user_pool.pool.id
 }
 resource "aws_cognito_identity_pool" "aos_pool" {
