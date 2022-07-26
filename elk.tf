@@ -1,6 +1,6 @@
 
 resource "aws_opensearch_domain" "central_logging_acadian" { 
-  domain_name           = "central-logging-testing-2" 
+  domain_name           = "central-logging-testing" 
   engine_version = "OpenSearch_1.2"
 
   log_publishing_options {
@@ -9,7 +9,7 @@ resource "aws_opensearch_domain" "central_logging_acadian" {
   }
 
   cluster_config {
-    instance_type = "r5.large.search"
+    instance_type = "r5.large.elasticsearch"
   }
 
   ebs_options {
@@ -65,7 +65,7 @@ data "aws_iam_policy_document" "os_access_policies" {
         "es:ESHttp*"
       ]
       resources = [
-        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging/*"
+        "arn:aws:es:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:domain/central-logging-testing/*"
       ]
     }
   }
