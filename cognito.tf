@@ -10,7 +10,7 @@ resource "aws_cognito_user_pool_client" "user_pool_client" {
   name = "central-logging-testing-opensearch"
   user_pool_id = aws_cognito_user_pool.pool.id
 }
-resource "aws_cognito_identity_pool" "aos_pool" {
+resource "aws_cognito_identity_pool" "pool" {
   identity_pool_name = "central-logging-testing-opensearch-id"
   allow_unauthenticated_identities = false
 
