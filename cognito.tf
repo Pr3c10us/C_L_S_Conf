@@ -3,7 +3,7 @@ resource "aws_cognito_user_pool" "pool" {
 }
 
 resource "aws_cognito_user_pool_domain" "user_pool_domain" {
-  domain = "central-logging-testing-opensearch-opensearch-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
+  domain = "central-logging-testing-opensearch-${data.aws_caller_identity.current.account_id}-${data.aws_region.current.name}"
   user_pool_id = aws_cognito_user_pool.pool.id
 }
 resource "aws_cognito_user_pool_client" "user_pool_client" {
