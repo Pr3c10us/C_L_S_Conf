@@ -1,6 +1,6 @@
 #s3 bucket
 resource "aws_s3_bucket" "logging-acadian" {
-  bucket = "acadian-testing-logging-bucket-dev"
+  bucket = "acadian-testing-logging-bucket-development"
 }
 
 resource "aws_s3_bucket_acl" "logging_bucket_acadian_acl" {
